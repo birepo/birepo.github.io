@@ -251,3 +251,82 @@ body {
     font-size: 2.5rem; /* 1152px container */
   }
 }
+
+/* Video switcher: one player with arrows to step through several clips */
+.video-switcher {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Fixed 16:9 frame so the page doesn't jump while a clip loads */
+.switcher-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+
+.switcher-stage video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* The player loading the next clip sits hidden behind the visible one */
+.switcher-stage video.is-buffer {
+  visibility: hidden;
+}
+
+.switcher-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.switcher-arrow:hover,
+.switcher-arrow:focus-visible {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.switcher-arrow.is-prev {
+  left: 0.75rem;
+}
+
+.switcher-arrow.is-next {
+  right: 0.75rem;
+}
+
+.switcher-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.switcher-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #c4c4c4;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.switcher-dot:hover {
+  background: #999;
+}
+
+.switcher-dot.is-active {
+  background: #363636;
+}

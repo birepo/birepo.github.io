@@ -26,6 +26,8 @@
   <a href="#overview">Overview</a>
   <a href="#abstract">Abstract</a>
   <a href="#method">Method</a>
+  <a href="#chaining">Primitive Chaining</a>
+  <a href="#disturbance">Robustness</a>
 </nav>
 
 
@@ -195,7 +197,60 @@
       <img src="./files/img/method_fig.png" class="interpolation-image" alt="BiREPO method overview.">
       <div class="content has-text-justified">
         <!-- TODO: method description. -->
-        <p>Coming soon.</p>
+        <p>A: Wrench-guided contact projection initializes bounding box contacts, samples nearby mesh contacts, and selects them using primitive-specific wrench objectives.  <br>
+          B: Contacts are executed in simulation with collision-free motions and primitive-specific open-loop trajectories; successful rollouts are retained as demonstrations.  <br>
+          C: A goal-conditioned diffusion policy uses current and goal point clouds, robot states, and the goal vector to generate bimanual action chunks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Video switchers: list clips in .switcher-clips (the <video> src is the first one); each plays once, then the next starts. -->
+<section class="section is-light" style="background-color:#f5f5f5;" id="chaining">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3 has-text-centered">Multi-Step Primitive Chaining</h2>
+      <div class="video-switcher">
+        <div class="switcher-stage">
+          <video controls muted playsinline preload="metadata" class="video-rounded"
+                 src="./files/video/chaining/chaining_blackshoe.mp4"></video>
+          <button class="switcher-arrow is-prev" type="button" aria-label="Previous video">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="switcher-arrow is-next" type="button" aria-label="Next video">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="switcher-dots"></div>
+        <ul class="switcher-clips" hidden>
+          <li data-src="./files/video/chaining/chaining_blackshoe.mp4">Black shoe</li>
+          <li data-src="./files/video/chaining/chaining_bluebox.mp4">Blue box</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="disturbance">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3 has-text-centered">Robustness to Disturbance</h2>
+      <div class="video-switcher">
+        <div class="switcher-stage">
+          <video controls muted playsinline preload="metadata" class="video-rounded"
+                 src="./files/video/human_disturbance/human_trashcan.mp4"></video>
+          <button class="switcher-arrow is-prev" type="button" aria-label="Previous video">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="switcher-arrow is-next" type="button" aria-label="Next video">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="switcher-dots"></div>
+        <ul class="switcher-clips" hidden>
+          <li data-src="./files/video/human_disturbance/human_trashcan.mp4">Trash can</li>
+          <li data-src="./files/video/human_disturbance/human_wifibox.mp4">Wi-Fi box</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -247,6 +302,97 @@
   });
 
   document.querySelectorAll('video[data-lazy]').forEach(v => videoObserver.observe(v));
+</script>
+
+<script>
+  // Video switchers: arrows step through the clips; a finished clip advances to the next, wrapping around.
+  // Two stacked players: the next clip loads in the hidden one and is swapped in once its first frame
+  // is ready, so switching never shows a blank frame.
+  document.querySelectorAll('.video-switcher').forEach(switcher => {
+    const stage = switcher.querySelector('.switcher-stage');
+    const clips = [...switcher.querySelectorAll('.switcher-clips li')].map(li => ({
+      src: new URL(li.dataset.src, document.baseURI).href,
+      label: li.textContent.trim(),
+    }));
+
+    let front = stage.querySelector('video');
+    let back = front.cloneNode(false);
+    back.removeAttribute('src');
+    back.preload = 'auto';
+    back.classList.add('is-buffer');
+    front.after(back);
+
+    let index = 0;
+    let request = 0;
+    let inView = false;
+
+    // One dot per clip; the filled one is playing. Clicking a dot jumps to that clip.
+    const dots = clips.map((clip, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'switcher-dot';
+      dot.title = clip.label;
+      dot.setAttribute('aria-label', clip.label);
+      dot.addEventListener('click', () => { if (i !== index) show(i); });
+      switcher.querySelector('.switcher-dots').append(dot);
+      return dot;
+    });
+
+    function updateDots() {
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === index);
+        dot.setAttribute('aria-current', i === index ? 'true' : 'false');
+      });
+    }
+
+    function bufferNext() {
+      back.src = clips[(index + 1) % clips.length].src;
+    }
+
+    function swap() {
+      [front, back] = [back, front];
+      front.classList.remove('is-buffer');
+      back.classList.add('is-buffer');
+      back.pause();
+      if (inView) front.play().catch(() => {});
+      bufferNext();
+    }
+
+    function show(i) {
+      index = (i + clips.length) % clips.length;
+      updateDots();
+      const id = ++request;
+      const ready = () => { if (id === request) swap(); };
+      back.muted = front.muted;
+      back.volume = front.volume;
+      if (back.src === clips[index].src && back.readyState >= 2) {
+        ready();
+        return;
+      }
+      back.addEventListener('loadeddata', ready, { once: true });
+      if (back.src !== clips[index].src) back.src = clips[index].src;
+      back.play().catch(() => {}); // starts loading where preload is ignored (iOS)
+    }
+
+    [front, back].forEach(v => v.addEventListener('ended', () => {
+      if (v === front) show(index + 1);
+    }));
+    switcher.querySelector('.is-prev').addEventListener('click', () => show(index - 1));
+    switcher.querySelector('.is-next').addEventListener('click', () => show(index + 1));
+
+    // Play only while on screen; start buffering the second clip the first time it comes into view.
+    new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView) {
+        if (!back.getAttribute('src')) bufferNext();
+        front.play().catch(() => {});
+      } else {
+        front.pause();
+      }
+    }, { rootMargin: '200px 0px' }).observe(stage);
+
+    updateDots();
+  });
 </script>
 
 <script>
