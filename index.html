@@ -17,6 +17,7 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/projection.css">
   <link rel="icon" type="image/png" href="./files/img/birepo_icon_bold.png">
 </head>
 
@@ -26,6 +27,7 @@
   <a href="#overview">Overview</a>
   <a href="#abstract">Abstract</a>
   <a href="#method">Method</a>
+  <a href="#projection">Contact Projection</a>
   <a href="#chaining">Primitive Chaining</a>
   <a href="#disturbance">Robustness</a>
 </nav>
@@ -205,8 +207,67 @@
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     Contact-projection results section. Drop this <section> into index.html
+     (it reads best right after "Method Overview"), then add the three lines
+     listed in INTEGRATION.md to <head>, the sidebar nav, and before </body>.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="section is-light" style="background-color:#f5f5f5;" id="projection">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3 has-text-centered">Wrench-Guided Contact Projection</h2>
+
+      <div class="content has-text-justified cp-intro">
+        <p>
+          The scripted primitives are defined on an object's bounding box, so running them on an irregular
+          object means projecting the nominal contacts onto its actual surface. We compare three ways of doing
+          that in simulation, on the same objects and the same goals: sampling contacts <b>at random</b> on
+          the mesh, projecting each nominal contact along the surface <b>normal</b>, and our
+          <b>wrench-guided</b> projection, which samples candidates near the nominal contact and keeps the
+          pair whose combined wrench best serves the primitive's objective. Every object–goal pair is
+          executed once per method, so the rates below compare like with like.
+        </p>
+      </div>
+
+      <div class="cp-rates" id="cp-rates"></div>
+
+      <h3 class="title is-4 has-text-centered">Representative cases</h3>
+      <p class="cp-sub">
+        Two objects per primitive, chosen where the wrench-guided projection succeeds and both baselines fail.
+        Coloured arrows show each contact's estimated moving direction; the grey glyph is the commanded goal.
+        Hollow markers are contacts on the far side of the object — turn the object in the explorer below to see them.
+      </p>
+      <div class="cp-figure" id="cp-figure"></div>
+      <div class="cp-legend">
+        <span><svg viewBox="0 0 32 18"><circle cx="9" cy="9" r="6" fill="#1f5fbf"/></svg>arm 1 / top press</span>
+        <span><svg viewBox="0 0 32 18"><rect x="3.5" y="3.5" width="11" height="11" fill="#e0741a"/></svg>arm 2 / side press</span>
+        <span><svg viewBox="0 0 32 18"><circle cx="9" cy="9" r="5.5" fill="#fff" stroke="#1f5fbf" stroke-width="2.4"/></svg>occluded (far side)</span>
+        <span><svg viewBox="0 0 32 18"><polygon points="2,7 20,7 20,3 30,9 20,15 20,11 2,11" fill="#1f5fbf"/></svg>estimated moving direction</span>
+        <span><svg viewBox="0 0 32 18"><polygon points="2,7 20,7 20,3 30,9 20,15 20,11 2,11" fill="#555"/></svg>goal (displacement / yaw / flip)</span>
+      </div>
+
+      <h3 class="title is-4 has-text-centered">Explore the contacts in 3D</h3>
+      <p class="cp-sub">Six objects per primitive. The three views share one camera, so a contact hidden in one is hidden in all — drag to look around it.</p>
+      <div class="cp-explorer" id="cp-explorer"></div>
+
+      <h3 class="title is-4 has-text-centered">Where the projection still fails</h3>
+      <p class="cp-sub">
+        Wrench-guided failures with the same annotations, and what the baselines did on the same episode.
+        Of the residual failures, four in five pushes drift in orientation, most rotations stop short of the
+        commanded angle, and most flips fail to tip rather than topple.
+      </p>
+      <div class="cp-fails" id="cp-fails"></div>
+
+      <p class="cp-more">
+        Every object and every episode, for all three methods, can be browsed in the
+        <a href="./files/projection/contact_pick_atlas.html" target="_blank">full contact atlas&nbsp;→</a>
+      </p>
+    </div>
+  </div>
+</section>
+
 <!-- Video switchers: list clips in .switcher-clips (the <video> src is the first one); each plays once, then the next starts. -->
-<section class="section is-light" style="background-color:#f5f5f5;" id="chaining">
+<section class="section" id="chaining">
   <div class="container is-max-desktop">
     <div class="hero-body">
       <h2 class="title is-3 has-text-centered">Multi-Step Primitive Chaining</h2>
@@ -231,7 +292,7 @@
   </div>
 </section>
 
-<section class="section" id="disturbance">
+<section class="section is-light" style="background-color:#f5f5f5;" id="disturbance">
   <div class="container is-max-desktop">
     <div class="hero-body">
       <h2 class="title is-3 has-text-centered">Robustness to Disturbance</h2>
@@ -278,6 +339,9 @@
     </div>
   </div>
 </footer>
+
+<script src="./static/js/three.min.js"></script>
+<script src="./static/js/projection.js" data-base="./files/projection/"></script>
 
 <script>
   // Lazy-load videos: swap data-src → src only when entering viewport
