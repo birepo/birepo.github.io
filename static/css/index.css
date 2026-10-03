@@ -168,6 +168,18 @@ body {
   width: 100%;
 }
 
+/* Reads as a still graphic: no hover controls, no cursor change, no overlay. */
+.video-static {
+  pointer-events: none;
+}
+
+.video-static::-webkit-media-controls,
+.video-static::-webkit-media-controls-enclosure,
+.video-static::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 .comparison-col-baseline {
   background: #d6d6d6;
   border-radius: 8px;

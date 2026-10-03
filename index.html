@@ -99,7 +99,7 @@
           </div>
 
           <!-- Pipeline intro. -->
-          <video data-lazy autoplay controls muted loop playsinline class="video-rounded">
+          <video data-lazy data-play-once autoplay muted playsinline preload="auto" disablepictureinpicture class="video-rounded video-static">
             <source src="./files/video/BiREPO_pipeline_intro_15s.mp4" type="video/mp4">
           </video>
 
@@ -231,6 +231,31 @@
 
       <div class="cp-rates" id="cp-rates"></div>
 
+      <details class="cp-metrics">
+        <summary>Additional metrics</summary>
+        <p class="cp-sub">
+          Demonstration generation, as reported in the paper: how many rollouts each projection needs to
+          produce one usable demonstration, and how many objects it leaves with too few demonstrations to
+          train on. Lower is better for both.
+        </p>
+        <table>
+          <thead>
+            <tr><th>Primitive</th><th>Random</th><th>Normal</th><th class="is-ours">Wrench-guided (ours)</th></tr>
+          </thead>
+          <tbody>
+            <tr class="grp"><th colspan="4">Attempts per successful demonstration (APS) &darr;</th></tr>
+            <tr><th>Pushing</th><td>5.4</td><td>4.1</td><td class="is-ours is-best">2.1</td></tr>
+            <tr><th>Rotating</th><td>5.9</td><td>4.8</td><td class="is-ours is-best">1.9</td></tr>
+            <tr><th>Flipping</th><td>3.2</td><td class="is-best">1.6</td><td class="is-ours is-best">1.6</td></tr>
+            <tr class="grp"><th colspan="4">Objects with fewer than five demonstrations / % &darr;</th></tr>
+            <tr><th>Pushing</th><td>40</td><td>30</td><td class="is-ours is-best">9</td></tr>
+            <tr><th>Rotating</th><td>19</td><td>24</td><td class="is-ours is-best">4</td></tr>
+            <tr><th>Flipping</th><td>16</td><td class="is-best">6</td><td class="is-ours is-best">6</td></tr>
+          </tbody>
+        </table>
+        <p class="cp-note">50 demonstration attempts per object and projection method, over the same 100 objects.</p>
+      </details>
+
       <h3 class="title is-4 has-text-centered">Representative cases</h3>
       <p class="cp-sub">
         Two objects per primitive, chosen where the wrench-guided projection succeeds and both baselines fail.
@@ -286,6 +311,8 @@
         <ul class="switcher-clips" hidden>
           <li data-src="./files/video/chaining/chaining_blackshoe.mp4">Black shoe</li>
           <li data-src="./files/video/chaining/chaining_bluebox.mp4">Blue box</li>
+          <li data-src="./files/video/chaining/chaining_white_foam.mp4">White foam</li>
+          <li data-src="./files/video/chaining/chaining_yellowbin.mp4">Yellow bin</li>
         </ul>
       </div>
     </div>
@@ -311,6 +338,8 @@
         <ul class="switcher-clips" hidden>
           <li data-src="./files/video/human_disturbance/human_trashcan.mp4">Trash can</li>
           <li data-src="./files/video/human_disturbance/human_wifibox.mp4">Wi-Fi box</li>
+          <li data-src="./files/video/human_disturbance/human_bluebox.mp4">Blue box</li>
+          <li data-src="./files/video/human_disturbance/human_yellowbin.mp4">Yellow bin</li>
         </ul>
       </div>
     </div>
@@ -356,6 +385,9 @@
           video.load();
           video.dataset.loaded = 'true';
         }
+        // data-play-once videos run a single time and hold on their final frame:
+        // never restart them, not even after scrolling away and back.
+        if (video.dataset.playOnce !== undefined && video.dataset.played) return;
         video.play().catch(() => {}); // catch autoplay policy rejections
       } else {
         video.pause();
@@ -366,6 +398,13 @@
   });
 
   document.querySelectorAll('video[data-lazy]').forEach(v => videoObserver.observe(v));
+
+  document.querySelectorAll('video[data-play-once]').forEach(v => {
+    v.addEventListener('ended', () => {
+      v.dataset.played = 'true';
+      videoObserver.unobserve(v); // stop watching, so scrolling back can never replay it
+    });
+  });
 </script>
 
 <script>

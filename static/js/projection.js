@@ -64,7 +64,6 @@
         bar.appendChild(el('span', 'val', r[m].pct.toFixed(0) + '%'));
         card.appendChild(bar);
       }
-      card.appendChild(el('div', 'n', r.wrench.n + ' paired episodes on ' + r.objects + ' objects'));
       root.appendChild(card);
     }
   }
