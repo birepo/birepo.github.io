@@ -97,7 +97,10 @@
   function renderFails(root, fails) {
     root.innerHTML = '';
     const mark = ok => '<i class="' + (ok ? 'ok' : 'bad') + '">' + (ok ? '✓' : '✗') + '</i>';
-    for (const f of fails) {
+    // data-only="mug, bin, …" narrows the gallery to those objects, in that order
+    const only = (root.dataset.only || '').split(',').map(s => s.trim()).filter(Boolean);
+    const shown = only.length ? only.map(o => fails.find(f => f.object === o)).filter(Boolean) : fails;
+    for (const f of shown) {
       const c = el('div', 'cp-fail');
       c.appendChild(el('div', 'hdr', f.title + ' <span>· ' + f.object + ' · ' + f.goal + '</span>'));
       c.appendChild(panel(f.image, f.items, true));

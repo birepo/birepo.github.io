@@ -256,6 +256,7 @@
         <p class="cp-note">50 demonstration attempts per object and projection method, over the same 100 objects.</p>
       </details>
 
+      <!-- Representative cases: hidden for now.
       <h3 class="title is-4 has-text-centered">Representative cases</h3>
       <p class="cp-sub">
         Two objects per primitive, chosen where the wrench-guided projection succeeds and both baselines fail.
@@ -270,6 +271,7 @@
         <span><svg viewBox="0 0 32 18"><polygon points="2,7 20,7 20,3 30,9 20,15 20,11 2,11" fill="#1f5fbf"/></svg>estimated moving direction</span>
         <span><svg viewBox="0 0 32 18"><polygon points="2,7 20,7 20,3 30,9 20,15 20,11 2,11" fill="#555"/></svg>goal (displacement / yaw / flip)</span>
       </div>
+      /Representative cases -->
 
       <h3 class="title is-4 has-text-centered">Explore the contacts in 3D</h3>
       <p class="cp-sub">Six objects per primitive. The three views share one camera, so a contact hidden in one is hidden in all — drag to look around it.</p>
@@ -281,7 +283,8 @@
         Of the residual failures, four in five pushes drift in orientation, most rotations stop short of the
         commanded angle, and most flips fail to tip rather than topple.
       </p>
-      <div class="cp-fails" id="cp-fails"></div>
+      <!-- data-only picks which failure cases to show, in this order (match the object names in figure.json) -->
+      <div class="cp-fails" id="cp-fails" data-only="mug, bin, chalk box, hard-drive box"></div>
 
       <p class="cp-more">
         Every object and every episode, for all three methods, can be browsed in the

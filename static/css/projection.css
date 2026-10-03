@@ -128,7 +128,7 @@
 .cp-legend svg { width: 1.6rem; height: 0.9rem; overflow: visible; }
 
 /* ── 3-D explorer ────────────────────────────────────────────────────────── */
-.cp-explorer { background: #fff; border-radius: 10px; padding: 1rem 1rem 0.9rem; }
+.cp-explorer { background: #fff; border-radius: 10px; padding: 1rem 1rem 0.9rem; max-width: 720px; margin: 0 auto; }
 .cp-tabs { display: flex; justify-content: center; gap: 0.35rem; margin-bottom: 0.9rem; }
 .cp-tabs button {
   border: 1px solid #dcdcdc; background: #fafafa; color: #4a4a4a; border-radius: 999px;
@@ -167,11 +167,11 @@
 .cp-loading { text-align: center; color: var(--cp-muted); font-size: 0.85rem; padding: 2rem 0; }
 
 /* ── where ours fails ────────────────────────────────────────────────────── */
-.cp-fails { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
-.cp-fail { background: #fff; border-radius: 10px; padding: 0.7rem 0.8rem 0.6rem; }
-.cp-fail .hdr { font-size: 0.85rem; color: #363636; margin-bottom: 0.3rem; font-family: 'Google Sans', 'Noto Sans', sans-serif; }
+.cp-fails { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; max-width: 860px; margin: 0 auto; }
+.cp-fail { background: #fff; border-radius: 10px; padding: 0.55rem 0.6rem 0.5rem; }
+.cp-fail .hdr { font-size: 0.78rem; color: #363636; margin-bottom: 0.25rem; font-family: 'Google Sans', 'Noto Sans', sans-serif; }
 .cp-fail .hdr span { color: var(--cp-muted); }
-.cp-fail .base { text-align: center; font-size: 0.74rem; color: var(--cp-muted); margin-top: 0.15rem; }
+.cp-fail .base { text-align: center; font-size: 0.7rem; color: var(--cp-muted); margin-top: 0.15rem; }
 .cp-fail .base i { font-style: normal; }
 .cp-fail .base .ok { color: var(--cp-ok); }
 .cp-fail .base .bad { color: var(--cp-bad); }

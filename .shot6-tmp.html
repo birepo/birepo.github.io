@@ -1,0 +1,5 @@
+<!DOCTYPE html><html><body style="margin:0"><iframe id="f" src="/index.html" style="width:1100px;height:1500px;border:0"></iframe>
+<script>document.getElementById('f').addEventListener('load',()=>{const F=document.getElementById('f'),D=F.contentWindow.document;
+const w=setInterval(()=>{const e=D.getElementById('cp-explorer');if(e&&D.querySelector('#cp-fails .cp-fail')){clearInterval(w);
+setTimeout(()=>F.contentWindow.scrollTo(0,e.getBoundingClientRect().top+F.contentWindow.scrollY-70),800);}},200);});</script>
+</body></html>
