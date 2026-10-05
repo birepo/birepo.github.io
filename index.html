@@ -18,6 +18,8 @@
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="stylesheet" href="./static/css/projection.css">
+  <link rel="stylesheet" href="./static/css/simulation.css">
+  <link rel="stylesheet" href="./static/css/realworld.css">
   <link rel="icon" type="image/png" href="./files/img/birepo_icon_bold.png">
 </head>
 
@@ -28,6 +30,8 @@
   <a href="#abstract">Abstract</a>
   <a href="#method">Method</a>
   <a href="#projection">Contact Projection</a>
+  <a href="#simulation">Simulation</a>
+  <a href="#realworld">Real World</a>
   <a href="#chaining">Primitive Chaining</a>
   <a href="#disturbance">Robustness</a>
 </nav>
@@ -102,6 +106,16 @@
           <video data-lazy data-play-once autoplay muted playsinline preload="auto" disablepictureinpicture class="video-rounded video-static">
             <source src="./files/video/BiREPO_pipeline_intro_15s.mp4" type="video/mp4">
           </video>
+          <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="subtitle has-text-centered">
+          <b>BiREPO</b> pushes, rotates and flips large or irregular objects into a goal pose with bimanual setup, learning from wrench-guided simulation rollouts and transferring to
+          the real robot zero-shot.
+        </h2>
+      </div>
+    </div>
+  </div>
 
         </div>
       </div>
@@ -134,19 +148,6 @@
   </div>
 </section>
 -->
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <!-- TODO: one- or two-sentence summary of BiREPO. -->
-        <h2 class="subtitle has-text-centered">
-          Project page under construction, thank you for your patience!
-        </h2>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section class="section is-light" style="background-color:#f5f5f5;" id="abstract">
   <div class="container is-max-desktop">
@@ -279,17 +280,200 @@
 
       <h3 class="title is-4 has-text-centered">Where the projection still fails</h3>
       <p class="cp-sub">
-        Wrench-guided failures with the same annotations, and what the baselines did on the same episode.
-        Of the residual failures, four in five pushes drift in orientation, most rotations stop short of the
-        commanded angle, and most flips fail to tip rather than topple.
+        Four wrench-guided failures, and what the baselines did on the same episode. Coloured arrows show each
+        contact's estimated moving direction; the grey arrow is the commanded goal. These are examples of a
+        wider pattern: across all 170 residual push failures, 84% end with an orientation error, most failed
+        rotations stop short of the commanded angle, and most failed flips never tip rather than toppling.
       </p>
       <!-- data-only picks which failure cases to show, in this order (match the object names in figure.json) -->
       <div class="cp-fails" id="cp-fails" data-only="mug, bin, chalk box, hard-drive box"></div>
 
-      <p class="cp-more">
+      <!-- <p class="cp-more">
         Every object and every episode, for all three methods, can be browsed in the
         <a href="./files/projection/contact_pick_atlas.html" target="_blank">full contact atlas&nbsp;→</a>
+      </p> -->
+    </div>
+  </div>
+</section>
+
+
+<!-- Simulation results. Episodes are listed in .sim-episodes; simulation.js builds the tabs,
+     the dots and the two players from that list, so adding a row adds an episode. -->
+<section class="section" id="simulation">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3 has-text-centered">Simulation Results</h2>
+
+      <div class="content has-text-justified sim-intro">
+        <p>
+          We train one goal-conditioned diffusion policy per primitive on the demonstrations the projection
+          generates, and evaluate on in-distribution objects with unseen goals over three seeds. Alongside
+          ablations of the goal vector and the cross-attention, we compare against <b>DP3</b>, adapted to our
+          goal-conditioned setting by concatenating the current and goal point clouds with an indicator, but
+          without cross-attention or an explicit goal vector. <b>BiREPO</b> reaches the highest average success
+          rate, 74.9% against 38.7% for DP3, with the largest margins on pushing and rotating.
+        </p>
+      </div>
+
+      <figure class="sim-chart">
+        <img src="./files/video/simulation/success_by_primitive.png"
+             alt="Success rate by primitive for BiREPO, its ablations and DP3." loading="lazy">
+        <figcaption>
+          Success rate per primitive, mean &plusmn; SD over three seeds. Pushing and rotating count as a success
+          within 30&nbsp;mm and 10&deg; of the goal; flipping uses its own orientation and settling criteria.
+        </figcaption>
+      </figure>
+
+      <h3 class="title is-4 has-text-centered">Qualitative Comparison</h3>
+      <p class="cp-sub">
+        Each pair is one evaluation episode rolled out by both policies, with the outcome measured against the
+        goal pose. Pick a primitive, then step through the objects.
       </p>
+
+      <div class="sim-compare" id="sim-compare">
+        <ul class="sim-episodes" hidden>
+          <li data-task="Pushing"
+              data-ours="BiREPO/pushing/b0_env1_BIA_Porcelain_Ramekin_With_Glazed_Rim__OK_perr17mm.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 17 mm"
+              data-base="DP3/pushing/b0_env1_BIA_Porcelain_Ramekin_With_Glazed_Rim__FAIL_perr44mm.mp4"
+              data-base-ok="false" data-base-cap="failure &middot; 44 mm">Porcelain ramekin</li>
+          <li data-task="Pushing"
+              data-ours="BiREPO/pushing/b1_env2_Bradshaw_International_11642_7_Qt_MP_P_OK_perr11mm.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 11 mm"
+              data-base="DP3/pushing/b1_env2_Bradshaw_International_11642_7_Qt_MP_P_FAIL_perr151mm.mp4"
+              data-base-ok="false" data-base-cap="failure &middot; 151 mm">Stock pot</li>
+          <li data-task="Pushing"
+              data-ours="BiREPO/pushing/b1_env3_neg_x_down__Crayola_Washable_Sidewalk__OK_perr2mm.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 2 mm"
+              data-base="DP3/pushing/b1_env3_neg_x_down__Crayola_Washable_Sidewalk__FAIL_perr87mm.mp4"
+              data-base-ok="false" data-base-cap="failure &middot; 87 mm">Sidewalk chalk</li>
+
+          <li data-task="Rotating"
+              data-ours="BiREPO/rotating/b0_env0_ACE_Coffee_Mug_Kristen_16_oz_cup_OK_perr12mm.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 1.5&deg; off"
+              data-base="DP3/rotating/b0_env0_ACE_Coffee_Mug_Kristen_16_oz_cup_OK_perr18mm.mp4"
+              data-base-ok="true" data-base-cap="success &middot; 3.4&deg; off">Coffee mug</li>
+          <li data-task="Rotating"
+              data-ours="BiREPO/rotating/b0_env15_Canon_225226_Ink_Cartridges_BlackColor_OK_perr19mm.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 3.8&deg; off"
+              data-base="DP3/rotating/b0_env15_Canon_225226_Ink_Cartridges_BlackColor_FAIL_perr3mm.mp4"
+              data-base-ok="false" data-base-cap="failure &middot; 82.9&deg; off">Ink cartridges</li>
+          <li data-task="Rotating"
+              data-ours="BiREPO/rotating/b0_env18_Nescafe_Tasters_Choice_Instant_Coffee__OK_perr7mm.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 5.5&deg; off"
+              data-base="DP3/rotating/b0_env18_Nescafe_Tasters_Choice_Instant_Coffee__OK_perr7mm.mp4"
+              data-base-ok="true" data-base-cap="success &middot; 3.3&deg; off">Instant coffee</li>
+
+          <li data-task="Flipping"
+              data-ours="BiREPO/flipping/b0_env0_3D_Dollhouse_Sofa_px_OK_89deg.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 89&deg;"
+              data-base="DP3/flipping/b0_env0_3D_Dollhouse_Sofa_px_noflip_-0deg.mp4"
+              data-base-ok="false" data-base-cap="no flip &middot; 0&deg;">Dollhouse sofa</li>
+          <li data-task="Flipping"
+              data-ours="BiREPO/flipping/b0_env11_neg_x_down__Nescafe_16Count_Dolce_Gusto_Cappuccino_Capsules_px_OK_89deg.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 89&deg;"
+              data-base="DP3/flipping/b0_env11_neg_x_down__Nescafe_16Count_Dolce_Gusto_Cappuccino_Capsules_px_noflip_0deg.mp4"
+              data-base-ok="false" data-base-cap="no flip &middot; 0&deg;">Coffee capsules</li>
+          <li data-task="Flipping"
+              data-ours="BiREPO/flipping/b0_env55_pos_y_down__Crayola_Washable_Sidewalk_Chalk_16_pack_wDZECiw7J6s_nx_OK_91deg.mp4"
+              data-ours-ok="true" data-ours-cap="success &middot; 91&deg;"
+              data-base="DP3/flipping/b0_env55_pos_y_down__Crayola_Washable_Sidewalk_Chalk_16_pack_wDZECiw7J6s_nx_noflip_0deg.mp4"
+              data-base-ok="false" data-base-cap="no flip &middot; 0&deg;">Chalk box</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Real-world experiments. Objects are listed in .rw-objects: data-push / data-rot / data-flip hold the
+     runs for that primitive, pipe-separated, from files/video/realworld_exp/<primitive>/<object>/.
+     realworld.js builds the object dropdown, the primitive buttons and one player per run. -->
+<section class="section is-light" style="background-color:#f5f5f5;" id="realworld">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3 has-text-centered">Real-World Experiments</h2>
+
+      <div class="content has-text-justified rw-intro">
+        <p>
+          We deploy the simulation-trained policies zero-shot on a real bimanual platform: two arms with
+          closed parallel-jaw grippers and two RealSense D415 cameras on unseen objects. The success criteria match simulation: within 30&nbsp;mm and 10&deg; of the goal for
+          pushing and rotating, and within 10&deg; of the desired 90&deg; flip, settled on the target face after
+          the arms withdraw. Since ground-truth poses are unavailable on hardware, the final pose error comes
+          from ICP registration of the observed point cloud to the goal.
+        </p>
+      </div>
+
+      <details class="rw-rates">
+        <summary>Detailed results</summary>
+        <table>
+          <thead>
+            <tr>
+              <th>Primitive</th>
+              <th>Regular<span>easy</span></th><th>Regular<span>hard</span></th>
+              <th>Irregular<span>easy</span></th><th>Irregular<span>hard</span></th>
+              <th class="is-all">All</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>Pushing</th><td>20 / 25</td><td>16 / 25</td><td>16 / 25</td><td>13 / 25</td><td class="is-all">65 / 100</td></tr>
+            <tr><th>Rotating</th><td>17 / 25</td><td>16 / 25</td><td>16 / 25</td><td>14 / 25</td><td class="is-all">63 / 100</td></tr>
+            <tr><th>Flipping</th><td>22 / 25</td><td>14 / 25</td><td>18 / 25</td><td>16 / 25</td><td class="is-all">70 / 100</td></tr>
+          </tbody>
+        </table>
+        <p class="rw-note">
+          Hard trials request pushes beyond 10&nbsp;cm, rotations beyond 45&deg;, or flips whose support edge is
+          oblique to the world axes; easy trials are the complementary cases.
+        </p>
+      </details>
+
+      <h3 class="title is-4 has-text-centered">Rollouts by object</h3>
+      <p class="cp-sub">Pick an object and a primitive to see all three trials we ran on it. Clips play at 2&times; speed.</p>
+
+      <div class="rw-gallery" id="rw-gallery">
+        <ul class="rw-objects" hidden>
+          <li data-name="Black Shoe Box"
+              data-push="run_live_142438.mp4|run_live_163933.mp4|run_live_170149.mp4"
+              data-rot="run_live_180131.mp4|run_live_181429.mp4|run_live_183127.mp4"
+              data-flip="run_live_163439 (1).mp4|run_live_163700.mp4|run_live_164305.mp4"></li>
+          <li data-name="Blue Box"
+              data-push="run_live_165721.mp4|run_live_180129.mp4|run_live_223923.mp4"
+              data-rot="run_live_184145.mp4|run_live_190448.mp4|run_live_191925.mp4"
+              data-flip="run_live_180136.mp4|run_live_181535.mp4|run_live_182102.mp4"></li>
+          <li data-name="Blue WIFI Box"
+              data-push="run_live_151522.mp4|run_live_181110.mp4|run_live_222649.mp4"
+              data-rot="run_live_193548.mp4|run_live_194508.mp4|run_live_194821.mp4"
+              data-flip="run_live_154813.mp4|run_live_155216 (1).mp4|run_live_155425 (1).mp4"></li>
+          <li data-name="Brown Box"
+              data-push="run_live_133544.mp4|run_live_150243.mp4|run_live_151429.mp4"
+              data-rot="run_live_171600_paper_fig.mp4|run_live_170617.mp4|run_live_171045.mp4"
+              data-flip="run_live_141345.mp4|run_live_150456.mp4|run_live_151121.mp4"></li>
+          <li data-name="Portable Fridge Box"
+              data-push="run_live_000117.mp4|run_live_225426.mp4|run_live_235757.mp4"
+              data-rot="run_live_195131.mp4|run_live_195403.mp4|run_live_211924.mp4"
+              data-flip="run_live_183042.mp4|run_live_183720.mp4|run_live_184127.mp4"></li>
+          <li data-name="Trash Can"
+              data-push="run_live_011945.mp4|run_live_012901.mp4|run_live_013643.mp4"
+              data-rot="run_live_220238.mp4|run_live_221328.mp4|run_live_221623.mp4"
+              data-flip="run_live_222629.mp4|run_live_223421.mp4|run_live_223545.mp4"></li>
+          <li data-name="White Foam"
+              data-push="run_live_014823.mp4|run_live_015716.mp4|run_live_020443.mp4"
+              data-rot="run_live_224421_nice_90.mp4|run_live_225045.mp4|run_live_233345.mp4"
+              data-flip="run_live_203921.mp4|run_live_204602.mp4|run_live_212309.mp4"></li>
+          <li data-name="White Foam 2"
+              data-push="run_live_002518.mp4|run_live_003424.mp4|run_live_004612.mp4"
+              data-rot="run_live_212548.mp4|run_live_213314.mp4|run_live_213900.mp4"
+              data-flip="run_live_224122.mp4|run_live_225108.mp4|run_live_225628.mp4"></li>
+          <li data-name="Wooden Shelf"
+              data-push="run_live_105152.mp4|run_live_105356.mp4|run_live_105817.mp4"
+              data-rot="run_live_003240.mp4|run_live_004014_relabeled.mp4|run_live_004915 (1).mp4"
+              data-flip="run_live_231901_relabeled.mp4|run_live_232155.mp4|run_live_233903_1_relabeled.mp4"></li>
+          <li data-name="Yellow Bin"
+              data-push="run_live_100423_paper_fig.mp4|run_live_102013 (1).mp4|run_live_102635.mp4"
+              data-rot="run_live_234239.mp4|run_live_234953.mp4|run_live_235925.mp4"
+              data-flip="run_live_213821.mp4|run_live_215403.mp4|run_live_215549.mp4"></li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -374,6 +558,8 @@
 
 <script src="./static/js/three.min.js"></script>
 <script src="./static/js/projection.js" data-base="./files/projection/"></script>
+<script src="./static/js/simulation.js" data-base="./files/video/simulation/"></script>
+<script src="./static/js/realworld.js" data-base="./files/video/realworld_exp/"></script>
 
 <script>
   // Lazy-load videos: swap data-src → src only when entering viewport

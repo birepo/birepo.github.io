@@ -342,3 +342,8 @@ body {
 .switcher-dot.is-active {
   background: #363636;
 }
+
+/* Even rhythm down the title block: video button → concept video → TL;DR, ~28px apart */
+#overview video.video-rounded { margin-top: 0.7rem; }
+#overview .hero-body { padding-bottom: 0.5rem; }
+.section.tldr { padding-top: 0.875rem; }
