@@ -264,29 +264,42 @@ body {
   }
 }
 
-/* Video switcher: one player with arrows to step through several clips */
+/* Video switcher: two clips side by side in a track that slides one clip at a time */
 .video-switcher {
-  max-width: 640px;
+  --switcher-gap: 1.5rem;
+  max-width: 940px;
   margin: 0 auto;
 }
 
-/* Fixed 16:9 frame so the page doesn't jump while a clip loads */
-.switcher-stage {
+/* the arrows live in the gutters, so they never cover a clip */
+.switcher-row {
   position: relative;
+  padding: 0 3rem;
+}
+
+.switcher-viewport {
+  overflow: hidden;
+}
+
+.switcher-track {
+  display: flex;
+  gap: var(--switcher-gap);
+  will-change: transform;
+}
+
+/* two per view: each clip takes half the viewport, minus its share of the gap */
+.switcher-slide {
+  position: relative;
+  flex: 0 0 calc((100% - var(--switcher-gap)) / 2);
   aspect-ratio: 16 / 9;
 }
 
-.switcher-stage video {
+.switcher-slide video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-/* The player loading the next clip sits hidden behind the visible one */
-.switcher-stage video.is-buffer {
-  visibility: hidden;
 }
 
 .switcher-arrow {
@@ -302,6 +315,7 @@ body {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.2s ease;
+  z-index: 2;
 }
 
 .switcher-arrow:hover,
@@ -309,13 +323,8 @@ body {
   background: rgba(0, 0, 0, 0.7);
 }
 
-.switcher-arrow.is-prev {
-  left: 0.75rem;
-}
-
-.switcher-arrow.is-next {
-  right: 0.75rem;
-}
+.switcher-arrow.is-prev { left: 0; }
+.switcher-arrow.is-next { right: 0; }
 
 .switcher-dots {
   display: flex;
@@ -335,15 +344,49 @@ body {
   transition: background 0.2s ease;
 }
 
-.switcher-dot:hover {
-  background: #999;
+.switcher-dot:hover { background: #999; }
+.switcher-dot.is-active { background: #363636; }
+
+/* keep the pair side by side on narrow windows; one at a time only on phones */
+@media screen and (max-width: 768px) {
+  .video-switcher { --switcher-gap: 0.8rem; }
+  .switcher-row { padding: 0 2.4rem; }
+  .switcher-arrow { width: 2.25rem; height: 2.25rem; font-size: 0.95rem; }
 }
 
-.switcher-dot.is-active {
-  background: #363636;
+@media screen and (max-width: 480px) {
+  .switcher-slide { flex-basis: 100%; }
 }
 
-/* Even rhythm down the title block: video button → concept video → TL;DR, ~28px apart */
-#overview video.video-rounded { margin-top: 0.7rem; }
-#overview .hero-body { padding-bottom: 0.5rem; }
-.section.tldr { padding-top: 0.875rem; }
+/* Conclusion: takeaways, then limitations, in one column */
+#conclusion h3.title { margin-top: 1.75rem; margin-bottom: 0.6rem; color: #363636; }
+#conclusion .content ul { margin-top: 0; }
+#conclusion .content li { margin-bottom: 0.6rem; }
+
+/* each point shows its first sentence; the rest unfolds from the button below */
+#conclusion .cl-more { display: none; }
+#conclusion.is-open .cl-more { display: inline; }
+
+.cl-toggle {
+  display: block;
+  margin: 1.5rem auto 0;
+  padding: 0.3rem 0.2rem;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
+  color: #3f5fc4;
+  cursor: pointer;
+}
+
+.cl-toggle::after {
+  content: '\25BE';
+  display: inline-block;
+  margin-left: 0.35em;
+  font-size: 0.8em;
+  transition: transform 0.15s ease;
+}
+
+#conclusion.is-open .cl-toggle::after { transform: rotate(180deg); }
+.cl-toggle:hover { text-decoration: underline; }
+.cl-toggle:focus-visible { outline: 2px solid #3f5fc4; outline-offset: 2px; border-radius: 4px; }

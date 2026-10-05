@@ -34,6 +34,7 @@
   <a href="#realworld">Real World</a>
   <a href="#chaining">Primitive Chaining</a>
   <a href="#disturbance">Robustness</a>
+  <a href="#conclusion">Conclusion</a>
 </nav>
 
 
@@ -302,7 +303,7 @@
 <section class="section" id="simulation">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <h2 class="title is-3 has-text-centered">Simulation Results</h2>
+      <h2 class="title is-3 has-text-centered">Simulation Experiments</h2>
 
       <div class="content has-text-justified sim-intro">
         <p>
@@ -484,13 +485,14 @@
     <div class="hero-body">
       <h2 class="title is-3 has-text-centered">Multi-Step Primitive Chaining</h2>
       <div class="video-switcher">
-        <div class="switcher-stage">
-          <video controls muted playsinline preload="metadata" class="video-rounded"
-                 src="./files/video/chaining/chaining_blackshoe.mp4"></video>
-          <button class="switcher-arrow is-prev" type="button" aria-label="Previous video">
+        <div class="switcher-row">
+          <button class="switcher-arrow is-prev" type="button" aria-label="Previous videos">
             <i class="fas fa-chevron-left"></i>
           </button>
-          <button class="switcher-arrow is-next" type="button" aria-label="Next video">
+          <div class="switcher-viewport">
+            <div class="switcher-track"></div>
+          </div>
+          <button class="switcher-arrow is-next" type="button" aria-label="Next videos">
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
@@ -502,6 +504,11 @@
           <li data-src="./files/video/chaining/chaining_yellowbin.mp4">Yellow bin</li>
         </ul>
       </div>
+      <p class="cp-sub is-below">
+        Every primitive begins and ends at the same robot home pose, so one can run straight into the next with
+        no hand-off between them. The same three policies then compose into multi-step reconfigurations:
+        two flips in a row to walk an object onto a new face, or a rotation followed by a push. 
+      </p>
     </div>
   </div>
 </section>
@@ -511,13 +518,14 @@
     <div class="hero-body">
       <h2 class="title is-3 has-text-centered">Robustness to Disturbance</h2>
       <div class="video-switcher">
-        <div class="switcher-stage">
-          <video controls muted playsinline preload="metadata" class="video-rounded"
-                 src="./files/video/human_disturbance/human_trashcan.mp4"></video>
-          <button class="switcher-arrow is-prev" type="button" aria-label="Previous video">
+        <div class="switcher-row">
+          <button class="switcher-arrow is-prev" type="button" aria-label="Previous videos">
             <i class="fas fa-chevron-left"></i>
           </button>
-          <button class="switcher-arrow is-next" type="button" aria-label="Next video">
+          <div class="switcher-viewport">
+            <div class="switcher-track"></div>
+          </div>
+          <button class="switcher-arrow is-next" type="button" aria-label="Next videos">
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
@@ -529,6 +537,64 @@
           <li data-src="./files/video/human_disturbance/human_yellowbin.mp4">Yellow bin</li>
         </ul>
       </div>
+      <p class="cp-sub is-below">
+        When a person moves the object
+        mid-rollout the next plan starts from where the object actually is and the arms keep working toward the
+        commanded goal.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="conclusion">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <h2 class="title is-3 has-text-centered">Conclusion</h2>
+
+      <h3 class="title is-5">Takeaways</h3>
+      <div class="content has-text-justified">
+        <ul>
+          <li>
+            Nonprehensile manipulation offers a practical alternative for objects that cannot be grasped.<span class="cl-more">
+            Medium and large objects frequently exceed the width or payload of a parallel-jaw gripper, and
+            pushing, rotating, and flipping with two arms reconfigures them without requiring a stable
+            grasp.</span>
+          </li>
+          <li>
+            Wrench-guided projection grounds demonstration generation in physics.<span class="cl-more">
+            Selecting contacts by the wrench they exert, rather than by surface geometry alone, produces
+            rollouts whose interactions remain consistent with the objective of each primitive, and the
+            policies trained on them transfer to the real platform without real world data collection or fine-tuning.</span>
+          </li>
+          <li>
+            Structured goal conditioning keeps the policy aware of the target pose.<span class="cl-more">
+            Encoding the goal point cloud together with the requested pose change vector, rather than leaving the goal
+            implicit in the observation, supplies the target at every replanning step, which we expect
+            contributes to the corrective behavior observed under disturbance.</span>
+          </li>
+        </ul>
+      </div>
+
+      <h3 class="title is-5">Limitations</h3>
+      <div class="content has-text-justified">
+        <ul>
+          <li>
+            Chaining and failure recovery remain bounded by the primitive definitions.<span class="cl-more">
+            Sequences are restricted to the primitives we define, and the policies lack an explicit recovery
+            mechanism after large execution deviations. Extending the primitives BiREPO learns toward free
+            SE(3) pose changes would broaden both composition and recovery.</span>
+          </li>
+          <li>
+            Tabletop kinematics constrain the reachable workspace.<span class="cl-more">
+            Several failures in our experiments occur near the boundary of the region jointly reachable by both
+            arms. Mounting the arms on a mobile base would enlarge the workspace and address this failure
+            mode.</span>
+          </li>
+        </ul>
+      </div>
+
+      <button class="cl-toggle" type="button" id="cl-toggle" aria-expanded="false">Explanations</button>
     </div>
   </div>
 </section>
@@ -545,7 +611,7 @@
   </div>
 </section> -->
 
-<footer class="footer">
+<!-- <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
       <p>
@@ -554,7 +620,7 @@
       </p>
     </div>
   </div>
-</footer>
+</footer> -->
 
 <script src="./static/js/three.min.js"></script>
 <script src="./static/js/projection.js" data-base="./files/projection/"></script>
@@ -597,94 +663,146 @@
 </script>
 
 <script>
-  // Video switchers: arrows step through the clips; a finished clip advances to the next, wrapping around.
-  // Two stacked players: the next clip loads in the hidden one and is swapped in once its first frame
-  // is ready, so switching never shows a blank frame.
+  // Video switchers: a sliding two-up gallery. The clips sit in one track; the arrows slide it by a single
+  // clip and the track rewinds behind the animation (flex order, so nothing is re-parented and nothing
+  // stops playing). A dot per clip marks what is showing, and the track slides on once both have played.
   document.querySelectorAll('.video-switcher').forEach(switcher => {
-    const stage = switcher.querySelector('.switcher-stage');
     const clips = [...switcher.querySelectorAll('.switcher-clips li')].map(li => ({
       src: new URL(li.dataset.src, document.baseURI).href,
       label: li.textContent.trim(),
     }));
+    const track = switcher.querySelector('.switcher-track');
+    if (!clips.length || !track) return;
 
-    let front = stage.querySelector('video');
-    let back = front.cloneNode(false);
-    back.removeAttribute('src');
-    back.preload = 'auto';
-    back.classList.add('is-buffer');
-    front.after(back);
-
-    let index = 0;
-    let request = 0;
+    const n = clips.length;
+    const wrap = i => ((i % n) + n) % n;
+    let start = 0;
     let inView = false;
+    let sliding = false;
 
-    // One dot per clip; the filled one is playing. Clicking a dot jumps to that clip.
+    const slides = clips.map(clip => {
+      const slide = document.createElement('div');
+      slide.className = 'switcher-slide';
+      const v = document.createElement('video');
+      v.className = 'video-rounded';
+      v.src = clip.src;
+      v.muted = true;
+      v.controls = true;
+      v.playsInline = true;
+      v.preload = 'none';
+      v.title = clip.label;
+      slide.appendChild(v);
+      track.appendChild(slide);
+      return { slide, video: v };
+    });
+
+    // how many clips fit in the viewport right now (two normally, one on a phone)
+    function perView() {
+      const w = track.parentElement.clientWidth, step = slides[0].slide.getBoundingClientRect().width + gap();
+      return step > 0 ? Math.max(1, Math.round(w / step)) : 1;
+    }
+    const gap = () => parseFloat(getComputedStyle(track).columnGap) || 0;
+    const showing = () => Array.from({ length: Math.min(perView(), n) }, (_, k) => wrap(start + k));
+
+    function render() {
+      const idx = showing();
+      slides.forEach(({ slide, video }, i) => {
+        slide.style.order = wrap(i - start);           // reorders without touching the DOM
+        const on = idx.includes(i);
+        if (on) {
+          if (video.preload !== 'auto') video.preload = 'auto';
+          if (inView) video.play().catch(() => {});
+        } else {
+          video.pause();
+          // keep the clip that slides in next warm
+          if (i === wrap(start + idx.length) && video.preload === 'none') video.preload = 'metadata';
+        }
+      });
+      dots.forEach((dot, i) => {
+        const on = idx.includes(i);
+        dot.classList.toggle('is-active', on);
+        dot.setAttribute('aria-current', on ? 'true' : 'false');
+      });
+    }
+
+    // slide one clip, then rewind the track under the new order so the motion looks continuous
+    function step(dir) {
+      if (sliding) return;
+      const shift = slides[0].slide.getBoundingClientRect().width + gap();
+      if (!shift) { start = wrap(start + dir); render(); return; }
+      sliding = true;
+
+      if (dir > 0) {
+        track.style.transition = 'transform 0.35s ease';
+        track.style.transform = 'translateX(' + -shift + 'px)';
+        const done = () => {
+          track.removeEventListener('transitionend', done);
+          start = wrap(start + 1);
+          track.style.transition = 'none';
+          track.style.transform = 'translateX(0)';
+          render();
+          requestAnimationFrame(() => { track.style.transition = ''; sliding = false; });
+        };
+        track.addEventListener('transitionend', done);
+      } else {
+        start = wrap(start - 1);                    // bring the incoming clip in on the left,
+        render();                                   // then animate back to rest
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(' + -shift + 'px)';
+        requestAnimationFrame(() => {
+          track.style.transition = 'transform 0.35s ease';
+          track.style.transform = 'translateX(0)';
+          const done = () => {
+            track.removeEventListener('transitionend', done);
+            track.style.transition = '';
+            sliding = false;
+          };
+          track.addEventListener('transitionend', done);
+        });
+      }
+    }
+
     const dots = clips.map((clip, i) => {
       const dot = document.createElement('button');
       dot.type = 'button';
       dot.className = 'switcher-dot';
       dot.title = clip.label;
       dot.setAttribute('aria-label', clip.label);
-      dot.addEventListener('click', () => { if (i !== index) show(i); });
+      dot.addEventListener('click', () => { if (!sliding) { start = i; render(); } });
       switcher.querySelector('.switcher-dots').append(dot);
       return dot;
     });
 
-    function updateDots() {
-      dots.forEach((dot, i) => {
-        dot.classList.toggle('is-active', i === index);
-        dot.setAttribute('aria-current', i === index ? 'true' : 'false');
-      });
-    }
-
-    function bufferNext() {
-      back.src = clips[(index + 1) % clips.length].src;
-    }
-
-    function swap() {
-      [front, back] = [back, front];
-      front.classList.remove('is-buffer');
-      back.classList.add('is-buffer');
-      back.pause();
-      if (inView) front.play().catch(() => {});
-      bufferNext();
-    }
-
-    function show(i) {
-      index = (i + clips.length) % clips.length;
-      updateDots();
-      const id = ++request;
-      const ready = () => { if (id === request) swap(); };
-      back.muted = front.muted;
-      back.volume = front.volume;
-      if (back.src === clips[index].src && back.readyState >= 2) {
-        ready();
-        return;
-      }
-      back.addEventListener('loadeddata', ready, { once: true });
-      if (back.src !== clips[index].src) back.src = clips[index].src;
-      back.play().catch(() => {}); // starts loading where preload is ignored (iOS)
-    }
-
-    [front, back].forEach(v => v.addEventListener('ended', () => {
-      if (v === front) show(index + 1);
+    slides.forEach(({ video }, i) => video.addEventListener('ended', () => {
+      const idx = showing();
+      if (idx.includes(i) && idx.every(k => slides[k].video.ended)) step(1);
     }));
-    switcher.querySelector('.is-prev').addEventListener('click', () => show(index - 1));
-    switcher.querySelector('.is-next').addEventListener('click', () => show(index + 1));
 
-    // Play only while on screen; start buffering the second clip the first time it comes into view.
+    switcher.querySelector('.is-prev').addEventListener('click', () => step(-1));
+    switcher.querySelector('.is-next').addEventListener('click', () => step(1));
+    window.addEventListener('resize', render);
+
     new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
-      if (inView) {
-        if (!back.getAttribute('src')) bufferNext();
-        front.play().catch(() => {});
-      } else {
-        front.pause();
-      }
-    }, { rootMargin: '200px 0px' }).observe(stage);
+      showing().forEach(i => { inView ? slides[i].video.play().catch(() => {}) : slides[i].video.pause(); });
+    }, { rootMargin: '200px 0px' }).observe(switcher);
 
-    updateDots();
+    render();
   });
+</script>
+
+<script>
+  // Conclusion: each point shows its claim; the button reveals the supporting sentences.
+  (function () {
+    const btn = document.getElementById('cl-toggle');
+    const section = document.getElementById('conclusion');
+    if (!btn || !section) return;
+    btn.addEventListener('click', () => {
+      const open = section.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = open ? 'Hide explanations' : 'Explanations';
+    });
+  })();
 </script>
 
 <script>
